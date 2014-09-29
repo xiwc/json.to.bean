@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -14,35 +12,23 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-public class Main {
+public class MainHandler {
 
-	private static final String FILE_PATH = "C:/json-2-bean";
+	public static final String FILE_PATH = "C:\\json-2-bean\\";
 	private static final String PKG_PATH = "package com.emc.vsi.providers.data;";
 	private static final String AUTHOR = "weichx";
+	private static ILogger logger;
 
-	public static void main(String[] args) throws IOException {
+	public static void handle(String json, ILogger logger) throws Exception {
 
+		MainHandler.logger = logger;
+
+		logger.info("force mkdir [%s].", FILE_PATH);
 		FileUtils.forceMkdir(new File(FILE_PATH));
 
-		String json = JOptionPane.showInputDialog("Input Json String");
-
+		logger.info("start parse json object");
 		parseJSONObject(null, JSON.parseObject(json));
-
-		java.awt.Desktop.getDesktop().open(new File(FILE_PATH));
-		Runtime.getRuntime().exec(String.format("explorer %s", FILE_PATH));
-
-		try {
-			String[] cmd = new String[5];
-			cmd[0] = "cmd";
-			cmd[1] = "/c";
-			cmd[2] = "start";
-			cmd[3] = " ";
-			cmd[4] = FILE_PATH;
-			Runtime.getRuntime().exec(cmd);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		logger.info("end parse json object");
 	}
 
 	private static void writeln(File file, String line) throws IOException {
@@ -58,10 +44,14 @@ public class Main {
 		File file = null;
 
 		if (!StringUtils.isEmpty(name)) {
-			file = new File(String.format("%s/%s.java", FILE_PATH, StringUtils.capitalize(name)));
+			file = new File(String.format("%s%s.java", FILE_PATH, StringUtils.capitalize(name)));
 
 			if (file.exists()) {
 				FileUtils.write(file, "");
+				logger.info("file [%s] exists.", String.format("%s%s.java", FILE_PATH, StringUtils.capitalize(name)));
+			} else {
+				logger.info("file [%s] not exists, will create new.",
+						String.format("%s%s.java", FILE_PATH, StringUtils.capitalize(name)));
 			}
 
 			writeln(file, PKG_PATH);
@@ -83,12 +73,15 @@ public class Main {
 
 			if (object instanceof String) {
 				System.out.println(String.format("private String %s;", key));
+				logger.info("private String %s;", key);
 				writeln(file, String.format("private String %s;", key));
 			} else if (object instanceof Boolean) {
 				System.out.println(String.format("private Boolean %s;", key));
+				logger.info("private Boolean %s;", key);
 				writeln(file, String.format("private Boolean %s;", key));
 			} else if (object instanceof JSONObject) {
 				System.out.println(String.format("private %s %s;", StringUtils.capitalize(key), key));
+				logger.info("private %s %s;", StringUtils.capitalize(key), key);
 				writeln(file, String.format("private %s %s;", StringUtils.capitalize(key), key));
 				map.put(key, object);
 			} else if (object instanceof JSONArray) {
@@ -102,11 +95,14 @@ public class Main {
 				}
 
 				System.out.println(String.format("private List<%s> %s;", StringUtils.capitalize(clsName), key));
+				logger.info("private List<%s> %s;", StringUtils.capitalize(clsName), key);
 				writeln(file, String.format("private List<%s> %s;", StringUtils.capitalize(clsName), key));
 				map.put(clsName, ((JSONArray) object).getJSONObject(0));
 			} else {
 				System.err.println(String.format("Key: %s, Value: %s, Unrecognized Type: %s", key,
 						String.valueOf(object), object.getClass().getName()));
+				logger.error("Key: %s, Value: %s, Unrecognized Type: %s", key, String.valueOf(object), object
+						.getClass().getName());
 			}
 		}
 
@@ -121,6 +117,7 @@ public class Main {
 
 				System.out.println();
 				System.out.println(String.format("JSONObject: [%s] %s", StringUtils.capitalize(key), key));
+				logger.info("JSONObject: [%s] %s", StringUtils.capitalize(key), key);
 
 				parseJSONObject(key, (JSONObject) object);
 
