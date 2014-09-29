@@ -79,6 +79,22 @@ public class MainHandler {
 				System.out.println(String.format("private Boolean %s;", key));
 				logger.info("private Boolean %s;", key);
 				writeln(file, String.format("private Boolean %s;", key));
+			} else if (object instanceof Integer) {
+				System.out.println(String.format("private Integer %s;", key));
+				logger.info("private Integer %s;", key);
+				writeln(file, String.format("private Integer %s;", key));
+			} else if (object instanceof Long) {
+				System.out.println(String.format("private Long %s;", key));
+				logger.info("private Long %s;", key);
+				writeln(file, String.format("private Long %s;", key));
+			} else if (object instanceof Short) {
+				System.out.println(String.format("private Short %s;", key));
+				logger.info("private Short %s;", key);
+				writeln(file, String.format("private Short %s;", key));
+			} else if (object instanceof Character) {
+				System.out.println(String.format("private Character %s;", key));
+				logger.info("private Character %s;", key);
+				writeln(file, String.format("private Character %s;", key));
 			} else if (object instanceof JSONObject) {
 				System.out.println(String.format("private %s %s;", StringUtils.capitalize(key), key));
 				logger.info("private %s %s;", StringUtils.capitalize(key), key);

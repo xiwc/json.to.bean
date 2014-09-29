@@ -136,6 +136,22 @@ public class MainFrame extends JFrame {
 		});
 		toolBar.add(btnOpen);
 
+		JButton btnClear = new JButton("Clear Output");
+		btnClear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				getTextAreaOutput().setText("");
+			}
+		});
+		toolBar.add(btnClear);
+
+		JButton btnClearInput = new JButton("Clear Input");
+		btnClearInput.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				getTextAreaInput().setText("");
+			}
+		});
+		toolBar.add(btnClearInput);
+
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		panel.add(splitPane, BorderLayout.CENTER);
