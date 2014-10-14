@@ -130,6 +130,10 @@ private String name;
 ### json字符串要求(key:value value的类型要求)
 - Boolean
 - String
+- Integer
+- Long
+- Short
+- Character
 - JsonObject
 - JsonArray
 - 其它类型暂不支持
