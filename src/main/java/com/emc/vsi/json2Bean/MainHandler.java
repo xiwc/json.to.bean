@@ -71,7 +71,7 @@ public class MainHandler {
 
 			Object object = jsonObject.get(key);
 
-			if (object instanceof String) {
+			if (object instanceof String || object == null) {
 				System.out.println(String.format("private String %s;", key));
 				logger.info("private String %s;", key);
 				writeln(file, String.format("private String %s;", key));
