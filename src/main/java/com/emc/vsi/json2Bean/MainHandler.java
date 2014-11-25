@@ -2,6 +2,7 @@ package com.emc.vsi.json2Bean;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ public class MainHandler {
 	private static final String PKG_PATH = "package com.emc.vsi.providers.data;";
 	private static final String AUTHOR = "weichx";
 	private static ILogger logger;
+	private static Map<String, Object> objMap = new HashMap<String, Object>();
 
 	public static void handle(String json, ILogger logger) throws Exception {
 
@@ -25,6 +27,8 @@ public class MainHandler {
 
 		logger.info("force mkdir [%s].", FILE_PATH);
 		FileUtils.forceMkdir(new File(FILE_PATH));
+
+		objMap.clear();
 
 		logger.info("start parse json object");
 		parseJSONObject(null, JSON.parseObject(json));
@@ -44,11 +48,21 @@ public class MainHandler {
 		File file = null;
 
 		if (!StringUtils.isEmpty(name)) {
-			file = new File(String.format("%s%s.java", FILE_PATH, StringUtils.capitalize(name)));
+
+			String clsName = StringUtils.capitalize(name);
+
+			file = new File(String.format("%s%s.java", FILE_PATH, clsName));
 
 			if (file.exists()) {
+
+				clsName = String.format("%s%s", StringUtils.capitalize(name), String.valueOf(new Date().getTime()));
+
+				file = new File(String.format("%s%s.java", FILE_PATH, clsName));
+
 				FileUtils.write(file, "");
-				logger.info("file [%s] exists.", String.format("%s%s.java", FILE_PATH, StringUtils.capitalize(name)));
+
+				logger.info("file [%s] exists, will create a new file[%s]",
+						String.format("%s%s.java", FILE_PATH, StringUtils.capitalize(name)), file.getParent());
 			} else {
 				logger.info("file [%s] not exists, will create new.",
 						String.format("%s%s.java", FILE_PATH, StringUtils.capitalize(name)));
@@ -61,7 +75,7 @@ public class MainHandler {
 			writeln(file, "* @author " + AUTHOR);
 			writeln(file, "*");
 			writeln(file, "*/");
-			writeln(file, "public class " + StringUtils.capitalize(name) + " {");
+			writeln(file, "public class " + clsName + " {");
 			writeln(file, "");
 		}
 
@@ -96,10 +110,19 @@ public class MainHandler {
 				logger.info("private Character %s;", key);
 				writeln(file, String.format("private Character %s;", key));
 			} else if (object instanceof JSONObject) {
-				System.out.println(String.format("private %s %s;", StringUtils.capitalize(key), key));
-				logger.info("private %s %s;", StringUtils.capitalize(key), key);
-				writeln(file, String.format("private %s %s;", StringUtils.capitalize(key), key));
-				map.put(key, object);
+
+				String newK = key;
+
+				if (objMap.containsKey(key)) {
+					newK = key + new Date().getTime();
+				}
+
+				objMap.put(newK, null);
+
+				System.out.println(String.format("private %s %s;", StringUtils.capitalize(newK), newK));
+				logger.info("private %s %s;", StringUtils.capitalize(newK), newK);
+				writeln(file, String.format("private %s %s;", StringUtils.capitalize(newK), newK));
+				map.put(newK, object);
 			} else if (object instanceof JSONArray) {
 
 				String clsName = key;
@@ -109,6 +132,12 @@ public class MainHandler {
 				} else if (key.endsWith("s")) {
 					clsName = key.substring(0, key.length() - 1);
 				}
+
+				if (objMap.containsKey(clsName)) {
+					clsName = clsName + new Date().getTime();
+				}
+
+				objMap.put(clsName, null);
 
 				System.out.println(String.format("private List<%s> %s;", StringUtils.capitalize(clsName), key));
 				logger.info("private List<%s> %s;", StringUtils.capitalize(clsName), key);
