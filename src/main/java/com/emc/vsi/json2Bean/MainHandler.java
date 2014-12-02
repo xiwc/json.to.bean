@@ -25,6 +25,7 @@ public class MainHandler {
 
 		MainHandler.logger = logger;
 
+		FileUtils.deleteDirectory(new File(FILE_PATH));
 		logger.info("force mkdir [%s].", FILE_PATH);
 		FileUtils.forceMkdir(new File(FILE_PATH));
 
@@ -114,14 +115,19 @@ public class MainHandler {
 				String newK = key;
 
 				if (objMap.containsKey(key)) {
-					newK = key + new Date().getTime();
+
+					if (StringUtils.isEmpty(name)) {
+						newK = key + new Date().getTime();
+					} else {
+						newK = name + StringUtils.capitalize(key);
+					}
 				}
 
 				objMap.put(newK, null);
 
-				System.out.println(String.format("private %s %s;", StringUtils.capitalize(newK), newK));
+				System.out.println(String.format("private %s %s;", StringUtils.capitalize(newK), key));
 				logger.info("private %s %s;", StringUtils.capitalize(newK), newK);
-				writeln(file, String.format("private %s %s;", StringUtils.capitalize(newK), newK));
+				writeln(file, String.format("private %s %s;", StringUtils.capitalize(newK), key));
 				map.put(newK, object);
 			} else if (object instanceof JSONArray) {
 
@@ -134,7 +140,12 @@ public class MainHandler {
 				}
 
 				if (objMap.containsKey(clsName)) {
-					clsName = clsName + new Date().getTime();
+
+					if (StringUtils.isEmpty(name)) {
+						clsName = clsName + new Date().getTime();
+					} else {
+						clsName = name + StringUtils.capitalize(clsName);
+					}
 				}
 
 				objMap.put(clsName, null);
