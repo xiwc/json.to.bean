@@ -18,10 +18,10 @@ public class MainHandlerTest {
 
 		try {
 			Configuration configuration = new Configuration(Configuration.VERSION_2_3_21);
-			configuration.setClassicCompatible(true);
+			// configuration.setClassicCompatible(true);
 			configuration.setClassForTemplateLoading(this.getClass(), EMPTY_STRING);
-			configuration.setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-			configuration.setNumberFormat("");
+			// configuration.setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+			// configuration.setNumberFormat("");
 			configuration.setDefaultEncoding("utf-8");
 			Template template = configuration.getTemplate("Bean.ftl");
 
