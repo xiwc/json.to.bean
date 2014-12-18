@@ -122,7 +122,7 @@ public class MainHandler {
 
 				logger.info("private List<%s> %s;", StringUtils.capitalize(clsName), key);
 
-				beanInfo.getFields().add(new Field(key, StringUtils.capitalize(clsName)));
+				beanInfo.getFields().add(new Field(key, String.format("List<%s>", StringUtils.capitalize(clsName))));
 
 				map.put(clsName, ((JSONArray) object).getJSONObject(0));
 			} else {
