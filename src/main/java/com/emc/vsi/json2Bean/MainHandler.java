@@ -3,6 +3,7 @@ package com.emc.vsi.json2Bean;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +40,17 @@ public class MainHandler {
 		parseJSONObject(null, JSON.parseObject(json));
 
 		logger.info("<<<end parse json object");
+	}
+
+	private static boolean isPrimitive(Object obj) {
+
+		String name = obj.getClass().getName();
+
+		String[] names = { "java.lang.Boolean", "java.lang.Character", "java.lang.Byte", "java.lang.Short",
+				"java.lang.Integer", "java.lang.Long", "java.lang.Float", "java.lang.Double", "java.lang.Void",
+				"java.lang.String", "java.math.BigDecimal" };
+
+		return Arrays.asList(names).contains(name);
 	}
 
 	private static void parseJSONObject(String name, JSONObject jsonObject) throws IOException {
@@ -101,30 +113,46 @@ public class MainHandler {
 				map.put(newK, object);
 			} else if (object instanceof JSONArray) {
 
-				String clsName = key;
+				JSONArray jsonArray = (JSONArray) object;
 
-				if (key.endsWith("ies")) {
-					clsName = key.substring(0, key.length() - 3) + "y";
-				} else if (key.endsWith("s")) {
-					clsName = key.substring(0, key.length() - 1);
-				}
+				if (jsonArray.size() > 0 && isPrimitive(jsonArray.get(0))) {
 
-				if (objMap.containsKey(clsName)) {
+					logger.info("private List<%s> %s;", jsonArray.get(0).getClass().getSimpleName(), key);
 
-					if (StringUtils.isEmpty(name)) {
-						clsName = clsName + new Date().getTime();
+					beanInfo.getFields().add(
+							new Field(key, String.format("List<%s>", jsonArray.get(0).getClass().getSimpleName())));
+				} else {
+
+					String clsName = key;
+
+					if (key.endsWith("ies")) {
+						clsName = key.substring(0, key.length() - 3) + "y";
+					} else if (key.endsWith("s")) {
+						clsName = key.substring(0, key.length() - 1);
+					}
+
+					if (objMap.containsKey(clsName)) {
+
+						if (StringUtils.isEmpty(name)) {
+							clsName = clsName + new Date().getTime();
+						} else {
+							clsName = name + StringUtils.capitalize(clsName);
+						}
+					}
+
+					objMap.put(clsName, null);
+
+					logger.info("private List<%s> %s;", StringUtils.capitalize(clsName), key);
+
+					beanInfo.getFields()
+							.add(new Field(key, String.format("List<%s>", StringUtils.capitalize(clsName))));
+
+					if (jsonArray.size() > 0) {
+						map.put(clsName, jsonArray.getJSONObject(0));
 					} else {
-						clsName = name + StringUtils.capitalize(clsName);
+						map.put(clsName, new JSONObject());
 					}
 				}
-
-				objMap.put(clsName, null);
-
-				logger.info("private List<%s> %s;", StringUtils.capitalize(clsName), key);
-
-				beanInfo.getFields().add(new Field(key, String.format("List<%s>", StringUtils.capitalize(clsName))));
-
-				map.put(clsName, ((JSONArray) object).getJSONObject(0));
 			} else {
 				logger.error("Key: %s, Value: %s, Unrecognized Type: %s", key, String.valueOf(object), object
 						.getClass().getName());
