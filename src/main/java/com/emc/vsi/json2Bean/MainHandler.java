@@ -3,12 +3,12 @@ package com.emc.vsi.json2Bean;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -50,7 +50,7 @@ public class MainHandler {
 				"java.lang.Integer", "java.lang.Long", "java.lang.Float", "java.lang.Double", "java.lang.Void",
 				"java.lang.String", "java.math.BigDecimal" };
 
-		return Arrays.asList(names).contains(name);
+		return ArrayUtils.contains(names, name);
 	}
 
 	private static void parseJSONObject(String name, JSONObject jsonObject) throws IOException {
