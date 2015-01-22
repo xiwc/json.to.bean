@@ -37,7 +37,8 @@ public class MainHandler {
 
 		logger.info(">>>start parse json object");
 
-		parseJSONObject(null, JSON.parseObject(json));
+		parseJSONObject(null,
+				JSON.parseObject(String.format("{\"root\": %s}", json)));
 
 		logger.info("<<<end parse json object");
 	}
