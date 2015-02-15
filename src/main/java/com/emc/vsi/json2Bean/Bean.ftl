@@ -1,11 +1,13 @@
-package com.emc.vsi.providers.data;
+package com.emc.vsi.providers.data.vplex;
+
+import java.io.Serializable;
 
 /**
  *
  * @author weichx
  *
  */
-public class ${m.clsName} {
+public class ${m.clsName} implements Serializable {
 
 	<#list m.fields as f>
 	private ${f.type} ${f.name};
