@@ -9,8 +9,10 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Date;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -29,6 +31,7 @@ public class MainFrame extends JFrame {
 	private JPanel contentPane;
 	private JTextArea textAreaOutput;
 	private JTextArea textAreaInput;
+	private JCheckBox ckComment;
 
 	/**
 	 * Launch the application.
@@ -72,13 +75,18 @@ public class MainFrame extends JFrame {
 
 				String json = getTextAreaInput().getText();
 
+				Config config = new Config();
+				config.setAddValueAsComment(ckComment.isSelected());
+				config.setDate(Utils.formatDate(new Date()));
+
 				if (StringUtils.isEmpty(json)) {
 					getTextAreaOutput().append("input json string is empty!");
 					return;
 				}
 
 				try {
-					MainHandler.handle(json, new ILogger() {
+
+					MainHandler.handle(json, config, new ILogger() {
 
 						public void info(String msg, Object... params) {
 							getTextAreaOutput().append(String.format("[INFO] - %s\r\n", String.format(msg, params)));
@@ -152,6 +160,10 @@ public class MainFrame extends JFrame {
 		});
 		toolBar.add(btnClearInput);
 
+		ckComment = new JCheckBox("Add value as comment");
+		ckComment.setSelected(true);
+		toolBar.add(ckComment);
+
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		panel.add(splitPane, BorderLayout.CENTER);
@@ -188,5 +200,9 @@ public class MainFrame extends JFrame {
 
 	public JTextArea getTextAreaInput() {
 		return textAreaInput;
+	}
+
+	public JCheckBox getCkComment() {
+		return ckComment;
 	}
 }

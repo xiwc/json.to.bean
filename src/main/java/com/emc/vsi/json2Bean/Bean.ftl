@@ -1,15 +1,22 @@
-package com.emc.vsi.providers.data.vplex;
+// Auto Generated Code by Tool [JsonToBean]
+// Author Mail: weicheng.xi@emc.com
+// Version: 1.0.0
 
 import java.io.Serializable;
 
 /**
- *
- * @author weichx
- *
+ * 
+ * @author ${c.author}
+ * 
+ * @date ${c.date}
+ * 
  */
 public class ${m.clsName} implements Serializable {
 
 	<#list m.fields as f>
+	<#if c.addValueAsComment && f.value>
+	/** eg: ${f.value} **/
+	</#if>
 	private ${f.type} ${f.name};
 	</#list>
 	
